@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+
+# macOS
+.DS_Store
+
+# Dataset folders
+Train_Data/
+Validation_Data/
+Test_Data/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.env/
+
+# Streamlit cache
+.streamlit/
