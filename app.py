@@ -1,59 +1,48 @@
 import streamlit as st
-import torch
-import timm
-import torch.nn as nn
+import tensorflow as tf
+import numpy as np
 
-from torchvision import transforms
 from PIL import Image
-
-# =========================
-# Device
-# =========================
-device = torch.device("cpu")
+from tensorflow.keras.applications.efficientnet import preprocess_input
 
 # =========================
 # Classes
 # =========================
-classes = ['Fire', 'Non_Fire']
+classes = [
+    "Grade 1",
+    "Grade 2",
+    "Grade 3",
+    "Grade 4"
+]
 
 # =========================
 # Load Model
 # =========================
-model = timm.create_model(
-    'vit_tiny_patch16_224',
-    pretrained=False
-)
-
-model.head = nn.Linear(
-    model.head.in_features,
-    len(classes)
-)
-
-model.load_state_dict(
-    torch.load(
-        "vit_forest_fire.pth",
-        map_location=device
-    )
-)
-
-model = model.to(device)
-
-model.eval()
+model = tf.keras.models.load_model("best_dfu_model.keras")
 
 # =========================
-# Transform
+# Image Size
 # =========================
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-])
+IMG_SIZE = 260
 
 # =========================
 # Streamlit UI
 # =========================
-st.title("🔥 Forest Fire Detection")
+st.set_page_config(
+    page_title="AI Diabetic Foot Ulcer Detection",
+    page_icon="🩺",
+    layout="centered"
+)
 
-st.write("Upload an image to detect fire.")
+st.title("🩺 AI Diabetic Foot Ulcer Detection System")
+
+st.write(
+    """
+    Upload an image of a diabetic foot ulcer for AI analysis.
+
+    The AI model will classify the wound into one of four severity grades.
+    """
+)
 
 uploaded_file = st.file_uploader(
     "Choose an image",
@@ -73,39 +62,73 @@ if uploaded_file is not None:
         use_container_width=True
     )
 
-    # Transform
-    input_tensor = transform(image)
+    # Preprocess Image
+    image = image.resize((IMG_SIZE, IMG_SIZE))
 
-    input_tensor = input_tensor.unsqueeze(0)
+    image_array = np.array(image, dtype=np.float32)
 
-    input_tensor = input_tensor.to(device)
+    image_array = preprocess_input(image_array)
+
+    image_array = np.expand_dims(image_array, axis=0)
 
     # Predict
-    with torch.no_grad():
+    prediction = model.predict(image_array)
 
-        outputs = model(input_tensor)
+    predicted_index = np.argmax(prediction)
 
-        probabilities = torch.softmax(outputs, dim=1)
+    confidence = np.max(prediction) * 100
 
-        confidence, predicted = torch.max(probabilities, 1)
-
-    predicted_class = classes[predicted.item()]
-
-    confidence_score = confidence.item() * 100
+    predicted_class = classes[predicted_index]
 
     # =========================
     # Output
     # =========================
-    st.subheader("Prediction")
+    st.subheader("Prediction Result")
 
-    if predicted_class == "Fire":
+    if predicted_class == "Grade 1":
+        st.success(f"🟢 {predicted_class}")
+        st.info("Low Severity")
 
-        st.error(
-            f"🔥 Fire Detected ({confidence_score:.2f}% confidence)"
+    elif predicted_class == "Grade 2":
+        st.warning(f"🟡 {predicted_class}")
+        st.info("Moderate Severity")
+
+    elif predicted_class == "Grade 3":
+        st.warning(f"🟠 {predicted_class}")
+        st.info("High Severity")
+
+    else:
+        st.error(f"🔴 {predicted_class}")
+        st.error("Critical Severity")
+
+    st.write(f"### Confidence: {confidence:.2f}%")
+
+    st.subheader("AI Recommendation")
+
+    if predicted_class == "Grade 1":
+        st.write(
+            "• Continue daily wound care.\n"
+            "• Keep the wound clean.\n"
+            "• Monitor for any signs of infection."
+        )
+
+    elif predicted_class == "Grade 2":
+        st.write(
+            "• Clean the wound regularly.\n"
+            "• Reduce pressure on the affected foot.\n"
+            "• Consider consulting a healthcare professional."
+        )
+
+    elif predicted_class == "Grade 3":
+        st.write(
+            "• Seek medical attention as soon as possible.\n"
+            "• Avoid walking on the affected foot.\n"
+            "• Follow professional wound care instructions."
         )
 
     else:
-
-        st.success(
-            f"✅ No Fire Detected ({confidence_score:.2f}% confidence)"
+        st.write(
+            "• Immediate medical attention is strongly recommended.\n"
+            "• Do not delay treatment.\n"
+            "• Visit a hospital or wound care specialist immediately."
         )
