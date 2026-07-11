@@ -1,48 +1,22 @@
 import streamlit as st
 
-st.title("👤 Patient Information")
+st.title("👤 กรอกข้อมูลผู้ใช้")
 
 with st.form("patient_form"):
 
-    st.subheader("Personal Information")
+    st.subheader("ข้อมูลส่วนตัว")
 
-    name = st.text_input("Patient Name")
+    name = st.text_input("ชื่อจริง-นามสกุล")
 
     age = st.number_input(
-        "Age",
+        "อายุ",
         min_value=1,
         max_value=120
     )
 
     gender = st.selectbox(
-        "Gender",
-        ["Male","Female"]
-    )
-
-    height = st.number_input("Height (cm)")
-    weight = st.number_input("Weight (kg)")
-
-    st.subheader("Medical Information")
-
-    diabetes = st.selectbox(
-        "Diabetes Type",
-        ["Type 1","Type 2","Unknown"]
-    )
-
-    duration = st.number_input(
-        "Years with Diabetes",
-        min_value=0
-    )
-
-    wound = st.selectbox(
-        "Wound Location",
-        [
-            "Toe",
-            "Heel",
-            "Sole",
-            "Top of Foot",
-            "Side of Foot"
-        ]
+        "เพศ",
+        ["ชาย","หญิง"]
     )
 
     submitted = st.form_submit_button("Continue")
