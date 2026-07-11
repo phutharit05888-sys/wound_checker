@@ -20,7 +20,7 @@ classes = [
 # =========================
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("dfu_final_model.keras")
+    return tf.keras.models.load_model("best_dfu_model.keras")
 
 model = load_model()
 
