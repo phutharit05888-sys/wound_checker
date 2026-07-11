@@ -22,7 +22,7 @@ with st.form("patient_form"):
     from datetime import date
 
     dob = st.date_input(
-        "Date of Birth",
+        "วัน/เดือน/ปี เกิด",
         min_value=date(1900, 1, 1),
         max_value=date.today()
     )
@@ -32,4 +32,4 @@ if submitted:
 
     st.success("ข้อมูลบันทึกเรียบร้อย!")
 
-    st.write("Proceed to the AI Detection page.")
+    st.write("ไปหน้าตรวจสอบแผล")
