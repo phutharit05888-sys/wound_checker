@@ -38,12 +38,10 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("🩺 AI Diabetic Foot Ulcer Detection System")
+st.title("🩺 วิเคราะห์และคัดกรองความเสี่ยงของแผล")
 
 st.markdown("""
-Upload or capture an image of a diabetic foot ulcer for AI analysis.
-
-The AI model will classify the wound into one of four severity grades.
+อัปโหลดหรือถ่ายภาพแผลที่เท้าของผู้ป่วยเพื่อนำไปวิเคราะห์ด้วย AI
 """)
 
 # =========================
