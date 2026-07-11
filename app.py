@@ -151,22 +151,6 @@ if image is not None:
     )
 
     # =========================
-    # Probability for All Classes
-    # =========================
-
-    st.subheader("Prediction Confidence by Grade")
-
-    for i, grade in enumerate(classes):
-
-        prob = float(prediction[0][i])
-
-        st.write(f"**{grade}**")
-
-        st.progress(prob)
-
-        st.write(f"{prob*100:.2f}%")
-
-    # =========================
     # Recommendation
     # =========================
 
