@@ -48,11 +48,11 @@ st.markdown("""
 # Image Source
 # =========================
 
-st.subheader("Choose Image Source")
+st.subheader("เลือกวิธีอัปโหลดรูปภาพ")
 
 tab1, tab2 = st.tabs([
-    "📁 Upload Image",
-    "📷 Camera"
+    "📁 อัปโหลดรูปภาพ",
+    "📷 กล้องถ่าย"
 ])
 
 image = None
@@ -60,7 +60,7 @@ image = None
 with tab1:
 
     uploaded_file = st.file_uploader(
-        "Upload a wound image",
+        "อัปโหลดรูปภาพ",
         type=["jpg", "jpeg", "png"]
     )
 
@@ -70,7 +70,7 @@ with tab1:
 with tab2:
 
     camera_photo = st.camera_input(
-        "Take a picture"
+        "ถ่ายภาพแผล"
     )
 
     if camera_photo is not None:
@@ -102,7 +102,7 @@ if image is not None:
         axis=0
     )
 
-    with st.spinner("Analyzing image..."):
+    with st.spinner("วิเคราะห์รูปภาพ..."):
 
         prediction = model.predict(
             image_array,
@@ -159,49 +159,29 @@ if image is not None:
     if predicted_class == "Grade 1":
 
         st.success("""
-• Continue daily wound care.
+• มีความเสี่ยงจะเกิดแผล
 
-• Keep the wound clean.
-
-• Monitor for any signs of infection.
-
-• Continue regular follow-up if needed.
+• ควรดูแลและเฝ้าระวังอย่างเหมาะสม
 """)
 
     elif predicted_class == "Grade 2":
 
         st.warning("""
-• Clean the wound regularly.
-
-• Reduce pressure on the affected foot.
-
-• Schedule an appointment with a healthcare professional.
-
-• Monitor the wound every day.
+• ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม
 """)
 
     elif predicted_class == "Grade 3":
 
         st.warning("""
-• Seek medical attention as soon as possible.
-
-• Avoid walking on the affected foot.
-
-• Follow professional wound care instructions.
-
-• Infection risk may be increased.
+• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
+อวัยวะ
 """)
 
     else:
 
         st.error("""
-• Immediate medical attention is strongly recommended.
-
-• Do not delay treatment.
-
-• Visit a hospital or wound care specialist immediately.
-
-• Emergency wound management may be required.
+• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
+อวัยวะ
 """)
 
     # =========================
