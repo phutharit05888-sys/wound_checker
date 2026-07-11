@@ -33,7 +33,7 @@ IMG_SIZE = 260
 # Streamlit UI
 # =========================
 st.set_page_config(
-    page_title="AI Diabetic Foot Ulcer Detection",
+    page_title="วิเคราะห์และคัดกรองความเสี่ยงของแผล",
     page_icon="🩺",
     layout="centered"
 )
