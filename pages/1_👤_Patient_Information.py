@@ -26,10 +26,10 @@ with st.form("patient_form"):
         min_value=date(1900, 1, 1),
         max_value=date.today()
     )
-    submitted = st.form_submit_button("Continue")
+    submitted = st.form_submit_button("ยืนยัน")
 
 if submitted:
 
-    st.success("Information saved successfully!")
+    st.success("ข้อมูลบันทึกเรียบร้อย!")
 
     st.write("Proceed to the AI Detection page.")
