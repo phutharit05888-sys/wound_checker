@@ -44,10 +44,25 @@ st.write(
     """
 )
 
-uploaded_file = st.file_uploader(
-    "Choose an image",
-    type=["jpg", "jpeg", "png"]
-)
+st.subheader("Select Image Source")
+
+tab1, tab2 = st.tabs(["📁 Upload Image", "📷 Camera"])
+
+image = None
+
+with tab1:
+    uploaded_file = st.file_uploader(
+        "Choose an image",
+        type=["jpg", "jpeg", "png"]
+    )
+
+    if image is not None:
+
+with tab2:
+    camera_image = st.camera_input("Take a picture of the wound")
+
+    if camera_image is not None:
+        image = Image.open(camera_image).convert("RGB")
 
 # =========================
 # Prediction
