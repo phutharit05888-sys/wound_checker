@@ -4,13 +4,13 @@ import os
 
 
 st.set_page_config(
-    page_title="Assessment History",
+    page_title="บันทึกผลการประเมิน",
     page_icon="📋"
 )
 
 
 st.title(
-    "📋 ระบบบันทึกผลการประเมิน (Assessment History)"
+    "📋 ระบบบันทึกผลการประเมิน"
 )
 
 
