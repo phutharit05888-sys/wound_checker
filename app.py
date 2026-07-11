@@ -56,7 +56,9 @@ with tab1:
         type=["jpg", "jpeg", "png"]
     )
 
-    if image is not None:
+    if uploaded_file is not None:
+
+    image = Image.open(uploaded_file).convert("RGB")
 
 with tab2:
     camera_image = st.camera_input("Take a picture of the wound")
