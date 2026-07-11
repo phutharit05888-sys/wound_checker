@@ -19,8 +19,10 @@ with st.form("patient_form"):
         ["ชาย","หญิง"]
     )
 
-    date = st.text_input(
-        "วัน/เดือน/ปีเกิด(พ.ศ.)",
+    from datetime import date
+
+    dob = st.date_input(
+        "Date of Birth",
         min_value=date(1900, 1, 1),
         max_value=date.today()
     )
