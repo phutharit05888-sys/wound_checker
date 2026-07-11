@@ -19,6 +19,11 @@ with st.form("patient_form"):
         ["ชาย","หญิง"]
     )
 
+    birth = st.text_input(
+        "วัน/เดือน/ปีเกิด(พ.ศ.)",
+        min_value=date(1900, 1, 1),
+        max_value=date.today()
+    )
     submitted = st.form_submit_button("Continue")
 
 if submitted:
