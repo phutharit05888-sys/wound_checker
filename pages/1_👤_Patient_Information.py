@@ -23,7 +23,7 @@ with st.form("patient_form"):
 
     dob = st.date_input(
         "Date of Birth",
-        min_value=date(1900, 1, 1),
+        min_value=date(1, 1, 1900),
         max_value=date.today()
     )
     submitted = st.form_submit_button("ยืนยัน")
