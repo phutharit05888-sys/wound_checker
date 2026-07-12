@@ -1,10 +1,7 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-import pandas as pd
-import os
 
-from datetime import datetime
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
@@ -31,15 +28,6 @@ model = load_model()
 # Image Size
 # =========================
 IMG_SIZE = 260
-
-# ==========================
-# Assessment History Setup
-# ==========================
-
-IMAGE_FOLDER = "images"
-HISTORY_FILE = "assessment_history.csv"
-
-os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 # =========================
 # Streamlit UI
@@ -121,140 +109,87 @@ if image is not None:
             verbose=0
         )
 
-prediction = model.predict(image_array, verbose=0)
+    predicted_index = np.argmax(prediction)
 
-predicted_index = np.argmax(prediction)
-confidence = float(np.max(prediction) * 100)
-predicted_class = classes[predicted_index]
-    
+    confidence = float(np.max(prediction) * 100)
+
+    predicted_class = classes[predicted_index]
 
     # =========================
     # Results
     # =========================
 
-st.divider()
+    st.divider()
 
-st.subheader("ผลประเมิน")
+    st.subheader("ผลประเมิน")
 
-if predicted_class == "Grade 1":
+    if predicted_class == "Grade 1":
 
         st.success(f"🟢 {predicted_class}")
         st.info("มีความเสี่ยงจะเกิดแผล ควรดูแลและเฝ้าระวังอย่างเหมาะสม")
 
-elif predicted_class == "Grade 2":
+    elif predicted_class == "Grade 2":
 
         st.warning(f"🟡 {predicted_class}")
         st.info("ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม")
 
-elif predicted_class == "Grade 3":
+    elif predicted_class == "Grade 3":
 
         st.warning(f"🟠 {predicted_class}")
         st.info("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
 
-else:
+    else:
 
         st.error(f"🔴 {predicted_class}")
         st.error("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
 
-st.metric(
+    st.metric(
         "Prediction Confidence",
         f"{confidence:.2f}%"
-)
-
-# ==========================================
-# Recommendation
-# ==========================================
-
-if predicted_class == "Grade 1":
-
-    recommendation = (
-        "มีความเสี่ยงจะเกิดแผล "
-        "ควรดูแลและเฝ้าระวังอย่างเหมาะสม"
     )
 
-elif predicted_class == "Grade 2":
+    # =========================
+    # Recommendation
+    # =========================
 
-    recommendation = (
-        "ควรพบแพทย์เพื่อเข้ารับการรักษา "
-        "ก่อนที่บาดแผลจะลุกลาม"
-    )
+    st.divider()
 
-elif predicted_class == "Grade 3":
+    st.subheader("คำแนะนำการดูแลแผลเบื้องต้น")
 
-    recommendation = (
-        "ควรพบแพทย์โดยด่วน "
-        "เนื่องจากบาดแผลมีความเสี่ยงสูง"
-    )
+    if predicted_class == "Grade 1":
 
-else:
+        st.success("""
+ควรล้างแผลด้วยน้ำเกลือปราศจากเชื้อ ทายาฆ่าเชื้อตามแพทย์สั่ง 
+ปิดด้วยผ้าก๊อซแห้ง และหลีกเลี่ยงการลงน้ำหนักหรือกดทับบริเวณแผล
+""")
 
-    recommendation = (
-        "ควรเข้ารับการรักษาโดยด่วนที่สุด"
-    )
+    elif predicted_class == "Grade 2":
 
-timestamp = datetime.now()
+        st.warning("""
+• ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม
+""")
 
-image_filename = timestamp.strftime(
-    "%Y%m%d_%H%M%S"
-) + ".png"
+    elif predicted_class == "Grade 3":
 
-image_path = os.path.join(
-    IMAGE_FOLDER,
-    image_filename
-)
+        st.warning("""
+• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
+อวัยวะ
+""")
 
-image.save(image_path)
+    else:
 
-new_record = pd.DataFrame([{
+        st.error("""
+• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
+อวัยวะ
+""")
 
-    "วันที่และเวลาที่ประเมิน":
-        timestamp.strftime("%d/%m/%Y %H:%M"),
-
-    "ชื่อผู้ป่วย":
-        st.session_state["patient"]["name"],
-
-    "อายุ":
-        st.session_state["patient"]["age"],
-
-    "เพศ":
-        st.session_state["patient"]["gender"],
-
-    "ภาพแผล":
-        image_filename,
-
-    "ระดับความเสี่ยง":
-        predicted_class,
-
-    "ความมั่นใจ (%)":
-        round(confidence,2),
-
-    "คำแนะนำ":
-        recommendation
-
-}])
-
-if os.path.exists(HISTORY_FILE):
-
-    old = pd.read_csv(HISTORY_FILE)
-
-    new_record = pd.concat(
-        [old,new_record],
-        ignore_index=True
-    )
-
-new_record.to_csv(
-    HISTORY_FILE,
-    index=False,
-    encoding="utf-8-sig"
-)
-    
     # =========================
     # Medical Disclaimer
     # =========================
 
-st.divider()
+    st.divider()
 
-st.caption(
+    st.caption(
         "⚠️ This AI system is intended for screening purposes only. "
         "It does not replace diagnosis or treatment by a qualified healthcare professional."
     )
