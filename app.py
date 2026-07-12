@@ -1,7 +1,10 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+import pandas as pd
+import os
 
+from datetime import datetime
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
@@ -28,6 +31,15 @@ model = load_model()
 # Image Size
 # =========================
 IMG_SIZE = 260
+
+# ==========================
+# Assessment History Setup
+# ==========================
+
+IMAGE_FOLDER = "images"
+HISTORY_FILE = "assessment_history.csv"
+
+os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 # =========================
 # Streamlit UI
@@ -114,6 +126,7 @@ if image is not None:
     confidence = float(np.max(prediction) * 100)
 
     predicted_class = classes[predicted_index]
+    
 
     # =========================
     # Results
@@ -148,41 +161,93 @@ if image is not None:
         f"{confidence:.2f}%"
     )
 
-    # =========================
-    # Recommendation
-    # =========================
+# ==========================================
+# Recommendation
+# ==========================================
 
-    st.divider()
+if predicted_class == "Grade 1":
 
-    st.subheader("คำแนะนำการดูแลแผลเบื้องต้น")
+    recommendation = (
+        "มีความเสี่ยงจะเกิดแผล "
+        "ควรดูแลและเฝ้าระวังอย่างเหมาะสม"
+    )
 
-    if predicted_class == "Grade 1":
+elif predicted_class == "Grade 2":
 
-        st.success("""
-ควรล้างแผลด้วยน้ำเกลือปราศจากเชื้อ ทายาฆ่าเชื้อตามแพทย์สั่ง 
-ปิดด้วยผ้าก๊อซแห้ง และหลีกเลี่ยงการลงน้ำหนักหรือกดทับบริเวณแผล
-""")
+    recommendation = (
+        "ควรพบแพทย์เพื่อเข้ารับการรักษา "
+        "ก่อนที่บาดแผลจะลุกลาม"
+    )
 
-    elif predicted_class == "Grade 2":
+elif predicted_class == "Grade 3":
 
-        st.warning("""
-• ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม
-""")
+    recommendation = (
+        "ควรพบแพทย์โดยด่วน "
+        "เนื่องจากบาดแผลมีความเสี่ยงสูง"
+    )
 
-    elif predicted_class == "Grade 3":
+else:
 
-        st.warning("""
-• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
-อวัยวะ
-""")
+    recommendation = (
+        "ควรเข้ารับการรักษาโดยด่วนที่สุด"
+    )
 
-    else:
+timestamp = datetime.now()
 
-        st.error("""
-• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
-อวัยวะ
-""")
+image_filename = timestamp.strftime(
+    "%Y%m%d_%H%M%S"
+) + ".png"
 
+image_path = os.path.join(
+    IMAGE_FOLDER,
+    image_filename
+)
+
+image.save(image_path)
+
+new_record = pd.DataFrame([{
+
+    "วันที่และเวลาที่ประเมิน":
+        timestamp.strftime("%d/%m/%Y %H:%M"),
+
+    "ชื่อผู้ป่วย":
+        st.session_state["patient"]["name"],
+
+    "อายุ":
+        st.session_state["patient"]["age"],
+
+    "เพศ":
+        st.session_state["patient"]["gender"],
+
+    "ภาพแผล":
+        image_filename,
+
+    "ระดับความเสี่ยง":
+        predicted_class,
+
+    "ความมั่นใจ (%)":
+        round(confidence,2),
+
+    "คำแนะนำ":
+        recommendation
+
+}])
+
+if os.path.exists(HISTORY_FILE):
+
+    old = pd.read_csv(HISTORY_FILE)
+
+    new_record = pd.concat(
+        [old,new_record],
+        ignore_index=True
+    )
+
+new_record.to_csv(
+    HISTORY_FILE,
+    index=False,
+    encoding="utf-8-sig"
+)
+    
     # =========================
     # Medical Disclaimer
     # =========================
