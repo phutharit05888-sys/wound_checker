@@ -252,9 +252,9 @@ new_record.to_csv(
     # Medical Disclaimer
     # =========================
 
-    st.divider()
+st.divider()
 
-    st.caption(
+st.caption(
         "⚠️ This AI system is intended for screening purposes only. "
         "It does not replace diagnosis or treatment by a qualified healthcare professional."
     )
