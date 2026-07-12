@@ -165,6 +165,8 @@ if image is not None:
 # Recommendation
 # ==========================================
 
+predicted_class = classes[predicted_index]
+
 if predicted_class == "Grade 1":
 
     recommendation = (
