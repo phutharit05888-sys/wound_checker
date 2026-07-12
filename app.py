@@ -40,95 +40,9 @@ st.set_page_config(
 
 st.title("🩺 วิเคราะห์และคัดกรองความเสี่ยงของแผล")
 
-st.markdown(<style>
-
-.main{
-    background:#EEF5FF;
-}
-
-.block-container{
-    padding-top:1rem;
-    max-width:700px;
-}
-
-.title{
-    color:#0F3F87;
-    font-size:34px;
-    font-weight:bold;
-}
-
-.upload-box{
-    border:6px solid #4D74B8;
-    border-radius:25px;
-    background:#CFE8FF;
-    padding:40px;
-    text-align:center;
-    margin-top:30px;
-    margin-bottom:40px;
-}
-
-.menu-button{
-    background:#8EC5FF;
-    border-radius:20px;
-    text-align:center;
-    padding:25px;
-    font-size:22px;
-    font-weight:bold;
-}
-
-hr{
-    border:1px solid #4066A8;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-col1,col2 = st.columns([8,1])
-
-with col1:
-    st.markdown('<div class="title">🏥 หน้าหลัก</div>',unsafe_allow_html=True)
-
-with col2:
-    st.markdown("# 👤")
-
 st.markdown("""
-<div class="upload-box">
-
-# 📷
-
-### เริ่มการประเมินแผล
-
-</div>
-""",unsafe_allow_html=True)
-
-uploaded_file = st.file_uploader(
-    "",
-    type=["jpg","jpeg","png"],
-    label_visibility="collapsed"
-)
-
-camera = st.camera_input(
-    "",
-    label_visibility="collapsed"
-)
-
-st.divider()
-
-col1,col2 = st.columns(2)
-
-with col1:
-
-    st.button(
-        "🏠 หน้าแรก",
-        use_container_width=True
-    )
-
-with col2:
-
-    st.button(
-        "📄 ประวัติการประเมิน",
-        use_container_width=True
-    )
+อัปโหลดหรือถ่ายภาพแผลที่เท้าของผู้ป่วยเพื่อนำไปวิเคราะห์ด้วย AI
+""")
 
 # =========================
 # Image Source
