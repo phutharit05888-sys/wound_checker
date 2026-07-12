@@ -136,22 +136,22 @@ st.divider()
 
 st.subheader("ผลประเมิน")
 
-    if predicted_class == "Grade 1":
+if predicted_class == "Grade 1":
 
         st.success(f"🟢 {predicted_class}")
         st.info("มีความเสี่ยงจะเกิดแผล ควรดูแลและเฝ้าระวังอย่างเหมาะสม")
 
-    elif predicted_class == "Grade 2":
+elif predicted_class == "Grade 2":
 
         st.warning(f"🟡 {predicted_class}")
         st.info("ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม")
 
-    elif predicted_class == "Grade 3":
+elif predicted_class == "Grade 3":
 
         st.warning(f"🟠 {predicted_class}")
         st.info("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
 
-    else:
+else:
 
         st.error(f"🔴 {predicted_class}")
         st.error("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
@@ -159,7 +159,7 @@ st.subheader("ผลประเมิน")
     st.metric(
         "Prediction Confidence",
         f"{confidence:.2f}%"
-    )
+)
 
 # ==========================================
 # Recommendation
