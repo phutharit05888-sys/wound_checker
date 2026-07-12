@@ -154,7 +154,7 @@ if image is not None:
 
     st.divider()
 
-    st.subheader("AI Recommendation")
+    st.subheader("คำแนะนำการดูแลแผลเบื้องต้น")
 
     if predicted_class == "Grade 1":
 
