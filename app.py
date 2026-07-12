@@ -121,27 +121,29 @@ if image is not None:
 
     st.divider()
 
-    st.subheader("Prediction Result")
+    st.subheader("ผลประเมิน")
 
     if predicted_class == "Grade 1":
 
         st.success(f"🟢 {predicted_class}")
-        st.info("Low Severity")
+        st.info("มีความเสี่ยงจะเกิดแผล ควรดูแลและเฝ้าระวังอย่างเหมาะสม")
 
     elif predicted_class == "Grade 2":
 
         st.warning(f"🟡 {predicted_class}")
-        st.info("Moderate Severity")
+        st.info("ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม")
 
     elif predicted_class == "Grade 3":
 
         st.warning(f"🟠 {predicted_class}")
-        st.info("High Severity")
+        st.info("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัด
+อวัยวะ")
 
     else:
 
         st.error(f"🔴 {predicted_class}")
-        st.error("Critical Severity")
+        st.error("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัด
+อวัยวะ")
 
     st.metric(
         "Prediction Confidence",
