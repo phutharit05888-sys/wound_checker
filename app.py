@@ -132,9 +132,9 @@ predicted_class = classes[predicted_index]
     # Results
     # =========================
 
-    st.divider()
+st.divider()
 
-    st.subheader("ผลประเมิน")
+st.subheader("ผลประเมิน")
 
     if predicted_class == "Grade 1":
 
