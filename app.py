@@ -121,11 +121,11 @@ if image is not None:
             verbose=0
         )
 
-    predicted_index = np.argmax(prediction)
+prediction = model.predict(image_array, verbose=0)
 
-    confidence = float(np.max(prediction) * 100)
-
-    predicted_class = classes[predicted_index]
+predicted_index = np.argmax(prediction)
+confidence = float(np.max(prediction) * 100)
+predicted_class = classes[predicted_index]
     
 
     # =========================
@@ -164,8 +164,6 @@ if image is not None:
 # ==========================================
 # Recommendation
 # ==========================================
-
-predicted_class = classes[predicted_index]
 
 if predicted_class == "Grade 1":
 
