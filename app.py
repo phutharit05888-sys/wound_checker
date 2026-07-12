@@ -1,7 +1,10 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+import pandas as pd
+import os
 
+from datetime import datetime
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
@@ -28,6 +31,15 @@ model = load_model()
 # Image Size
 # =========================
 IMG_SIZE = 260
+
+# ==========================
+# Assessment History Setup
+# ==========================
+
+IMAGE_FOLDER = "images"
+HISTORY_FILE = "assessment_history.csv"
+
+os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 # =========================
 # Streamlit UI
@@ -115,6 +127,37 @@ if image is not None:
 
     predicted_class = classes[predicted_index]
 
+    # ==========================================
+# Recommendation
+# ==========================================
+
+if predicted_class == "Grade 1":
+
+    recommendation = (
+        "มีความเสี่ยงจะเกิดแผล "
+        "ควรดูแลและเฝ้าระวังอย่างเหมาะสม"
+    )
+
+elif predicted_class == "Grade 2":
+
+    recommendation = (
+        "ควรพบแพทย์เพื่อเข้ารับการรักษา "
+        "ก่อนที่บาดแผลจะลุกลาม"
+    )
+
+elif predicted_class == "Grade 3":
+
+    recommendation = (
+        "ควรพบแพทย์โดยด่วน "
+        "เนื่องจากบาดแผลมีความเสี่ยงสูง"
+    )
+
+else:
+
+    recommendation = (
+        "ควรเข้ารับการรักษาโดยด่วนที่สุด"
+    )
+
     # =========================
     # Results
     # =========================
@@ -182,6 +225,7 @@ if image is not None:
 • ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
 อวัยวะ
 """)
+        
 
     # =========================
     # Medical Disclaimer
