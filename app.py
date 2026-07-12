@@ -156,7 +156,7 @@ else:
         st.error(f"🔴 {predicted_class}")
         st.error("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
 
-    st.metric(
+st.metric(
         "Prediction Confidence",
         f"{confidence:.2f}%"
 )
