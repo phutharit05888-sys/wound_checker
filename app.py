@@ -27,7 +27,7 @@ model = load_model()
 # =========================
 # Image Size
 # =========================
-IMG_SIZE = 224
+IMG_SIZE = 128
 
 # =========================
 # Streamlit UI
