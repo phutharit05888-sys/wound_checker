@@ -2,113 +2,61 @@ import streamlit as st
 import pandas as pd
 import os
 
-st.set_page_config(
-    page_title="บันทึกผลการประเมิน",
-    page_icon="📋",
-    layout="centered"
-)
-
 HISTORY_FILE = "assessment_history.csv"
-
-st.markdown("""
-<style>
-
-.card{
-    display:flex;
-    background:white;
-    border-radius:20px;
-    overflow:hidden;
-    margin-bottom:18px;
-    box-shadow:0px 2px 10px rgba(0,0,0,0.08);
-}
-
-.bar{
-    width:18px;
-}
-
-.green{
-    background:#49C16D;
-}
-
-.yellow{
-    background:#FFD23F;
-}
-
-.orange{
-    background:#FF9800;
-}
-
-.red{
-    background:#E53935;
-}
-
-.content{
-    padding:18px;
-}
-
-.title{
-    font-size:28px;
-    font-weight:bold;
-    color:#123B78;
-}
-
-.date{
-    color:#777;
-    font-size:16px;
-    margin-top:5px;
-}
-
-</style>
-""", unsafe_allow_html=True)
 
 st.title("📋 บันทึกผลการประเมิน")
 
-if not os.path.exists(HISTORY_FILE):
-
-    st.info("ยังไม่มีข้อมูลการประเมิน")
-
-else:
+if os.path.exists(HISTORY_FILE):
 
     df = pd.read_csv(HISTORY_FILE)
 
-    df = df.iloc[::-1]
+    if len(df) == 0:
+        st.info("ยังไม่มีข้อมูลการประเมิน")
 
-    for _, row in df.iterrows():
+    else:
 
-        risk = row["ระดับความเสี่ยง"]
+        df = df.iloc[::-1]
 
-        if risk == "Grade 1":
-            color = "green"
-            text = "ควรดูแลเฝ้าระวัง"
+        for _, row in df.iterrows():
 
-        elif risk == "Grade 2":
-            color = "yellow"
-            text = "ควรพบแพทย์"
+            if row["ผลการประเมิน"] == "ควรดูแลเฝ้าระวัง":
+                color = "#46C46A"
 
-        elif risk == "Grade 3":
-            color = "orange"
-            text = "ควรพบแพทย์โดยด่วน"
+            elif row["ผลการประเมิน"] == "ควรพบแพทย์":
+                color = "#FFD54F"
 
-        else:
-            color = "red"
-            text = "ควรพบแพทย์โดยด่วน"
+            else:
+                color = "#F44336"
 
-        st.markdown(f"""
-        <div class="card">
+            st.markdown(f"""
+            <div style="
+                display:flex;
+                background:white;
+                border-radius:18px;
+                margin-bottom:15px;
+                overflow:hidden;
+                box-shadow:0 1px 6px rgba(0,0,0,.15);
+            ">
 
-            <div class="bar {color}"></div>
+                <div style="
+                    width:14px;
+                    background:{color};
+                "></div>
 
-            <div class="content">
+                <div style="padding:18px;">
 
-                <div class="title">
-                    {text}
-                </div>
+                    <h3 style="margin:0;color:#163E7A;">
+                        {row['ผลการประเมิน']}
+                    </h3>
 
-                <div class="date">
-                    บันทึกวันที่ : {row['วันที่และเวลาที่ประเมิน']}
+                    <p style="margin-top:6px;color:gray;">
+                        บันทึกวันที่ : {row['วันที่และเวลา']}
+                    </p>
+
                 </div>
 
             </div>
+            """, unsafe_allow_html=True)
 
-        </div>
-        """, unsafe_allow_html=True)
+else:
+    st.info("ยังไม่มีข้อมูลการประเมิน")
