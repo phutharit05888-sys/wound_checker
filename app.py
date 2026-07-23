@@ -1,193 +1,241 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+import pandas as pd
+import os
 
+from datetime import datetime
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
-import pandas as pd
-import os
-from datetime import datetime
+# =====================================================
+# PAGE CONFIG
+# =====================================================
 
-
-HISTORY_FILE = "assessment_history.csv"
-
-if not os.path.exists(HISTORY_FILE):
-
-    pd.DataFrame(columns=[
-        "วันที่และเวลา",
-        "ผลการประเมิน",
-        "คำแนะนำ",
-        "Confidence"
-    ]).to_csv(
-        HISTORY_FILE,
-        index=False,
-        encoding="utf-8-sig"
-    )
-
-
-predicted_class = classes[predicted_index]
-
-# --------------------------
-# Convert prediction
-# --------------------------
-
-if predicted_class == "Grade 1":
-
-    result = "ควรดูแลเฝ้าระวัง"
-
-    recommendation = (
-        "ควรล้างแผลด้วยน้ำเกลือ ดูแลแผล "
-        "และเฝ้าระวังอาการ"
-    )
-
-elif predicted_class == "Grade 2":
-
-    result = "ควรพบแพทย์"
-
-    recommendation = (
-        "ควรพบแพทย์เพื่อเข้ารับการรักษา"
-    )
-
-else:
-
-    result = "ควรพบแพทย์โดยด่วน"
-
-    recommendation = (
-        "ควรพบแพทย์โดยด่วน"
-    )
-
-# --------------------------
-# Save Assessment History
-# --------------------------
-
-history = pd.read_csv(HISTORY_FILE)
-
-new_record = pd.DataFrame([{
-
-    "วันที่และเวลา":
-        datetime.now().strftime("%d/%m/%Y %H:%M"),
-
-    "ผลการประเมิน":
-        result,
-
-    "คำแนะนำ":
-        recommendation,
-
-    "Confidence":
-        round(confidence,2)
-
-}])
-
-history = pd.concat(
-    [history,new_record],
-    ignore_index=True
-)
-
-history.to_csv(
-    HISTORY_FILE,
-    index=False,
-    encoding="utf-8-sig"
-)
-
-# =========================
-# Classes
-# =========================
-classes = [
-    "Grade 1",
-    "Grade 2",
-    "Grade 3",
-    "Grade 4"
-]
-
-# =========================
-# Load Model
-# =========================
-@st.cache_resource
-def load_model():
-    return tf.keras.models.load_model("dfu_final_model (5).keras")
-
-model = load_model()
-
-# =========================
-# Image Size
-# =========================
-IMG_SIZE = 128
-
-# =========================
-# Streamlit UI
-# =========================
 st.set_page_config(
     page_title="วิเคราะห์และคัดกรองความเสี่ยงของแผล",
     page_icon="🩺",
     layout="centered"
 )
 
-st.title("🩺 วิเคราะห์และคัดกรองความเสี่ยงของแผล")
+# =====================================================
+# CUSTOM STYLE
+# =====================================================
 
 st.markdown("""
-อัปโหลดหรือถ่ายภาพแผลที่เท้าของผู้ป่วยเพื่อนำไปวิเคราะห์ด้วย AI
-""")
+<style>
 
-# =========================
-# Image Source
-# =========================
+.stApp{
+    background:#EEF7FF;
+}
 
-st.subheader("เลือกวิธีอัปโหลดรูปภาพ")
+.block-container{
+    max-width:900px;
+    padding-top:30px;
+}
 
-tab1, tab2 = st.tabs([
-    "📁 อัปโหลดรูปภาพ",
-    "📷 กล้องถ่าย"
-])
+.title{
+    font-size:38px;
+    font-weight:bold;
+    color:#11468F;
+}
 
-image = None
+.subtitle{
+    color:#666;
+    font-size:18px;
+}
 
-with tab1:
+.card{
 
-    uploaded_file = st.file_uploader(
-        "อัปโหลดรูปภาพ",
-        type=["jpg", "jpeg", "png"]
+    background:white;
+
+    padding:25px;
+
+    border-radius:25px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+    margin-top:20px;
+
+}
+
+.result-card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    border:1px solid #E0E0E0;
+
+}
+
+.footer{
+
+    color:gray;
+
+    font-size:14px;
+
+    text-align:center;
+
+}
+
+.stButton>button{
+
+    width:100%;
+
+    border-radius:15px;
+
+    height:52px;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =====================================================
+# MODEL
+# =====================================================
+
+CLASSES = [
+    "Grade 1",
+    "Grade 2",
+    "Grade 3",
+    "Grade 4"
+]
+
+IMG_SIZE = 260
+
+MODEL_PATH = "dfu_final_model (5).keras"
+
+@st.cache_resource
+def load_model():
+    return tf.keras.models.load_model(MODEL_PATH)
+
+model = load_model()
+
+# =====================================================
+# HISTORY FILE
+# =====================================================
+
+HISTORY_FILE = "assessment_history.csv"
+
+if not os.path.exists(HISTORY_FILE):
+
+    history = pd.DataFrame(columns=[
+        "วันที่และเวลา",
+        "ผลการประเมิน",
+        "Confidence",
+        "คำแนะนำ"
+    ])
+
+    history.to_csv(
+        HISTORY_FILE,
+        index=False,
+        encoding="utf-8-sig"
     )
 
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file).convert("RGB")
+# =====================================================
+# HEADER
+# =====================================================
 
-with tab2:
+st.markdown(
+"""
+<div class="title">
+🩺 วิเคราะห์และคัดกรองความเสี่ยงของแผล
+</div>
+""",
+unsafe_allow_html=True
+)
 
-    camera_photo = st.camera_input(
-        "ถ่ายภาพแผล"
-    )
+st.markdown(
+"""
+<div class="subtitle">
 
-    if camera_photo is not None:
-        image = Image.open(camera_photo).convert("RGB")
+อัปโหลดหรือถ่ายภาพแผลที่เท้าของผู้ป่วย
+เพื่อให้ AI วิเคราะห์ระดับความรุนแรงของแผล
 
-# =========================
-# Prediction
-# =========================
+</div>
+""",
+unsafe_allow_html=True
+)
+
+# =====================================================
+# UPLOAD CARD
+# =====================================================
+
+with st.container(border=True):
+
+    st.subheader("📷 เลือกวิธีการประเมิน")
+
+    tab1, tab2 = st.tabs([
+        "📁 อัปโหลดรูปภาพ",
+        "📷 ถ่ายภาพ"
+    ])
+
+    image = None
+
+    with tab1:
+
+        uploaded_file = st.file_uploader(
+            "เลือกรูปภาพ",
+            type=["jpg","jpeg","png"]
+        )
+
+        if uploaded_file is not None:
+
+            image = Image.open(
+                uploaded_file
+            ).convert("RGB")
+
+    with tab2:
+
+        camera_photo = st.camera_input(
+            "ถ่ายภาพแผล"
+        )
+
+        if camera_photo is not None:
+
+            image = Image.open(
+                camera_photo
+            ).convert("RGB")
+
+# =====================================================
+# AI PREDICTION
+# =====================================================
 
 if image is not None:
 
     st.image(
         image,
-        caption="Selected Image",
+        caption="ภาพที่เลือก",
         use_container_width=True
     )
 
-    img = image.resize((IMG_SIZE, IMG_SIZE))
+    img = image.resize(
+        (IMG_SIZE, IMG_SIZE)
+    )
 
     image_array = np.array(
         img,
         dtype=np.float32
     )
 
-    image_array = preprocess_input(image_array)
+    image_array = preprocess_input(
+        image_array
+    )
 
     image_array = np.expand_dims(
         image_array,
         axis=0
     )
 
-    with st.spinner("วิเคราะห์รูปภาพ..."):
+    with st.spinner("🤖 AI กำลังวิเคราะห์..."):
 
         prediction = model.predict(
             image_array,
@@ -196,85 +244,214 @@ if image is not None:
 
     predicted_index = np.argmax(prediction)
 
-    confidence = float(np.max(prediction) * 100)
-
-    predicted_class = classes[predicted_index]
-
-    # =========================
-    # Results
-    # =========================
-
-    st.divider()
-
-    st.subheader("ผลประเมิน")
-
-    if predicted_class == "Grade 1":
-
-        st.success(f"🟢 {predicted_class}")
-        st.info("มีความเสี่ยงจะเกิดแผล ควรดูแลและเฝ้าระวังอย่างเหมาะสม")
-
-    elif predicted_class == "Grade 2":
-
-        st.warning(f"🟡 {predicted_class}")
-        st.info("ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม")
-
-    elif predicted_class == "Grade 3":
-
-        st.warning(f"🟠 {predicted_class}")
-        st.info("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
-
-    else:
-
-        st.error(f"🔴 {predicted_class}")
-        st.error("ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจนำไปสู่การตัดอวัยวะ")
-
-    st.metric(
-        "Prediction Confidence",
-        f"{confidence:.2f}%"
+    confidence = float(
+        np.max(prediction) * 100
     )
 
-    # =========================
-    # Recommendation
-    # =========================
+    predicted_class = CLASSES[predicted_index]
 
-    st.divider()
-
-    st.subheader("คำแนะนำการดูแลแผลเบื้องต้น")
+    # =====================================================
+    # RESULT TEXT
+    # =====================================================
 
     if predicted_class == "Grade 1":
 
-        st.success("""
-ควรล้างแผลด้วยน้ำเกลือปราศจากเชื้อ ทายาฆ่าเชื้อตามแพทย์สั่ง 
-ปิดด้วยผ้าก๊อซแห้ง และหลีกเลี่ยงการลงน้ำหนักหรือกดทับบริเวณแผล
-""")
+        risk_text = "มีความเสี่ยงจะเกิดแผล"
+
+        recommendation = """
+ควรล้างแผลด้วยน้ำเกลือปราศจากเชื้อ
+
+ทำความสะอาดแผลทุกวัน
+
+หลีกเลี่ยงการกดทับบริเวณแผล
+
+ติดตามอาการอย่างสม่ำเสมอ
+"""
+
+        color = "🟢"
 
     elif predicted_class == "Grade 2":
 
-        st.warning("""
-• ควรพบแพทย์เพื่อเข้ารับการรักษาก่อนที่บาดแผลเกิดการลุกลาม
-""")
+        risk_text = "ควรพบแพทย์"
+
+        recommendation = """
+ควรเข้ารับการรักษา
+
+ทำแผลอย่างถูกวิธี
+
+ลดการลงน้ำหนักที่เท้า
+
+ปฏิบัติตามคำแนะนำของแพทย์
+"""
+
+        color = "🟡"
 
     elif predicted_class == "Grade 3":
 
-        st.warning("""
-• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
-อวัยวะ
-""")
+        risk_text = "ควรพบแพทย์โดยด่วน"
+
+        recommendation = """
+แผลมีความเสี่ยงรุนแรง
+
+ควรพบแพทย์โดยเร็วที่สุด
+
+หลีกเลี่ยงการเดิน
+
+ดูแลแผลให้สะอาด
+"""
+
+        color = "🟠"
 
     else:
 
-        st.error("""
-• ควรพบแพทย์โดยด่วน เนื่องจากบาดแผลมีความเสี่ยงรุนแรงที่จะเกิดเนื้อตาย ซึ่งอาจน าไปสู่การตัด
-อวัยวะ
-""")
+        risk_text = "ควรพบแพทย์โดยด่วน"
 
-    # =========================
-    # Medical Disclaimer
-    # =========================
+        recommendation = """
+แผลอยู่ในระดับวิกฤต
+
+ควรเข้ารับการรักษาทันที
+
+อย่าปล่อยทิ้งไว้
+
+อาจเสี่ยงต่อการติดเชื้อรุนแรง
+"""
+
+        color = "🔴"
+
+    
+    # =====================================================
+    # RESULT CARD
+    # =====================================================
+
+    st.divider()
+
+    st.subheader("📋 ผลการประเมิน")
+
+    with st.container(border=True):
+
+        if predicted_class == "Grade 1":
+
+            st.success(f"{color} {risk_text}")
+
+        elif predicted_class == "Grade 2":
+
+            st.warning(f"{color} {risk_text}")
+
+        elif predicted_class == "Grade 3":
+
+            st.warning(f"{color} {risk_text}")
+
+        else:
+
+            st.error(f"{color} {risk_text}")
+
+        st.metric(
+            "ความมั่นใจของ AI",
+            f"{confidence:.2f}%"
+        )
+
+    # =====================================================
+    # RECOMMENDATION
+    # =====================================================
+
+    st.divider()
+
+    st.subheader("💡 คำแนะนำการดูแลเบื้องต้น")
+
+    if predicted_class == "Grade 1":
+
+        st.success(recommendation)
+
+    elif predicted_class == "Grade 2":
+
+        st.warning(recommendation)
+
+    elif predicted_class == "Grade 3":
+
+        st.warning(recommendation)
+
+    else:
+
+        st.error(recommendation)
+
+    # =====================================================
+    # SAVE TO HISTORY
+    # =====================================================
+
+    st.divider()
+
+    if st.button(
+        "💾 บันทึกผลการประเมิน",
+        use_container_width=True
+    ):
+
+        history = pd.read_csv(HISTORY_FILE)
+
+        new_record = pd.DataFrame([{
+
+            "วันที่และเวลา":
+                datetime.now().strftime("%d/%m/%Y %H:%M"),
+
+            "ผลการประเมิน":
+                risk_text,
+
+            "Confidence":
+                round(confidence,2),
+
+            "คำแนะนำ":
+                recommendation.replace("\n"," ")
+
+        }])
+
+        history = pd.concat(
+            [history,new_record],
+            ignore_index=True
+        )
+
+        history.to_csv(
+            HISTORY_FILE,
+            index=False,
+            encoding="utf-8-sig"
+        )
+
+        st.success("✅ บันทึกผลการประเมินเรียบร้อยแล้ว")
+
+    # =====================================================
+    # DISCLAIMER
+    # =====================================================
 
     st.divider()
 
     st.caption(
-        "⚠️ This AI system is intended for screening purposes only. "
-        "It does not replace diagnosis or treatment by a qualified healthcare professional."
+        """
+⚠️ ระบบ AI นี้ใช้เพื่อคัดกรองเบื้องต้นเท่านั้น
+
+ผลการประเมินไม่สามารถใช้แทนการวินิจฉัยจากแพทย์ได้
+
+หากแผลมีอาการรุนแรง ควรเข้าพบแพทย์ทันที
+"""
     )
+
+else:
+
+    st.info(
+        "👆 กรุณาอัปโหลดรูปภาพหรือถ่ายภาพแผลเพื่อเริ่มการวิเคราะห์"
+    )
+
+# =====================================================
+# FOOTER
+# =====================================================
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+st.markdown(
+"""
+<div class="footer">
+
+ระบบปัญญาประดิษฐ์สำหรับวิเคราะห์และคัดกรองความเสี่ยงของแผลเบาหวาน
+
+Developed with TensorFlow & Streamlit
+
+</div>
+""",
+unsafe_allow_html=True)
