@@ -2,61 +2,67 @@ import streamlit as st
 import pandas as pd
 import os
 
+st.set_page_config(
+    page_title="บันทึกผลการประเมิน",
+    page_icon="📋"
+)
+
 HISTORY_FILE = "assessment_history.csv"
 
 st.title("📋 บันทึกผลการประเมิน")
 
 if os.path.exists(HISTORY_FILE):
 
-    df = pd.read_csv(HISTORY_FILE)
+    history = pd.read_csv(HISTORY_FILE)
 
-    if len(df) == 0:
+    if len(history)==0:
+
         st.info("ยังไม่มีข้อมูลการประเมิน")
 
     else:
 
-        df = df.iloc[::-1]
+        history = history.iloc[::-1]
 
-        for _, row in df.iterrows():
+        for _,row in history.iterrows():
 
-            if row["ผลการประเมิน"] == "ควรดูแลเฝ้าระวัง":
-                color = "#46C46A"
+            if row["ผลการประเมิน"]=="ควรดูแลเฝ้าระวัง":
 
-            elif row["ผลการประเมิน"] == "ควรพบแพทย์":
-                color = "#FFD54F"
+                color="#49C16D"
+
+            elif row["ผลการประเมิน"]=="ควรพบแพทย์":
+
+                color="#FFD54F"
 
             else:
-                color = "#F44336"
+
+                color="#F44336"
 
             st.markdown(f"""
             <div style="
-                display:flex;
-                background:white;
-                border-radius:18px;
-                margin-bottom:15px;
-                overflow:hidden;
-                box-shadow:0 1px 6px rgba(0,0,0,.15);
+            display:flex;
+            background:white;
+            border-radius:18px;
+            overflow:hidden;
+            margin-bottom:18px;
+            box-shadow:0px 2px 8px rgba(0,0,0,.1);
             ">
 
-                <div style="
-                    width:14px;
-                    background:{color};
-                "></div>
+            <div style="
+            width:16px;
+            background:{color};
+            "></div>
 
-                <div style="padding:18px;">
+            <div style="padding:18px;">
 
-                    <h3 style="margin:0;color:#163E7A;">
-                        {row['ผลการประเมิน']}
-                    </h3>
+            <h3 style="margin:0;color:#173A75;">
+            {row['ผลการประเมิน']}
+            </h3>
 
-                    <p style="margin-top:6px;color:gray;">
-                        บันทึกวันที่ : {row['วันที่และเวลา']}
-                    </p>
-
-                </div>
+            <p style="margin-top:8px;color:gray;">
+            บันทึกวันที่ : {row['วันที่และเวลา']}
+            </p>
 
             </div>
-            """, unsafe_allow_html=True)
 
-else:
-    st.info("ยังไม่มีข้อมูลการประเมิน")
+            </div>
+            """,unsafe_allow_html=True)
