@@ -26,72 +26,56 @@ st.markdown("""
 <style>
 
 .stApp{
-    background:#EEF7FF;
+    background: var(--background-color);
+    color: var(--text-color);
 }
 
 .block-container{
+    padding-top:5rem;
     max-width:900px;
-    padding-top:30px;
 }
 
-.title{
-    font-size:38px;
-    font-weight:bold;
-    color:#11468F;
+[data-testid="stHeader"]{
+    background: transparent;
 }
 
-.subtitle{
-    color:#666;
-    font-size:18px;
+[data-testid="stAppViewContainer"]{
+    background: var(--background-color);
 }
 
 .card{
 
-    background:white;
-
-    padding:25px;
-
-    border-radius:25px;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.08);
-
-    margin-top:20px;
-
-}
-
-.result-card{
-
-    background:white;
+    background: var(--secondary-background-color);
 
     border-radius:20px;
 
     padding:20px;
 
-    border:1px solid #E0E0E0;
+    border:1px solid rgba(120,120,120,.2);
+
+}
+
+.title{
+
+    color: var(--text-color);
+
+    font-size:36px;
+
+    font-weight:bold;
+
+}
+
+.subtitle{
+
+    color: var(--text-color);
+
+    opacity:.75;
 
 }
 
 .footer{
 
     color:gray;
-
-    font-size:14px;
-
-    text-align:center;
-
-}
-
-.stButton>button{
-
-    width:100%;
-
-    border-radius:15px;
-
-    height:52px;
-
-    font-size:17px;
-
-    font-weight:bold;
 
 }
 
