@@ -5,6 +5,92 @@ import numpy as np
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
+import pandas as pd
+import os
+from datetime import datetime
+
+model = load_model()
+
+HISTORY_FILE = "assessment_history.csv"
+
+if not os.path.exists(HISTORY_FILE):
+
+    pd.DataFrame(columns=[
+        "วันที่และเวลา",
+        "ผลการประเมิน",
+        "คำแนะนำ",
+        "Confidence"
+    ]).to_csv(
+        HISTORY_FILE,
+        index=False,
+        encoding="utf-8-sig"
+    )
+
+
+predicted_class = classes[predicted_index]
+
+# --------------------------
+# Convert prediction
+# --------------------------
+
+if predicted_class == "Grade 1":
+
+    result = "ควรดูแลเฝ้าระวัง"
+
+    recommendation = (
+        "ควรล้างแผลด้วยน้ำเกลือ ดูแลแผล "
+        "และเฝ้าระวังอาการ"
+    )
+
+elif predicted_class == "Grade 2":
+
+    result = "ควรพบแพทย์"
+
+    recommendation = (
+        "ควรพบแพทย์เพื่อเข้ารับการรักษา"
+    )
+
+else:
+
+    result = "ควรพบแพทย์โดยด่วน"
+
+    recommendation = (
+        "ควรพบแพทย์โดยด่วน"
+    )
+
+# --------------------------
+# Save Assessment History
+# --------------------------
+
+history = pd.read_csv(HISTORY_FILE)
+
+new_record = pd.DataFrame([{
+
+    "วันที่และเวลา":
+        datetime.now().strftime("%d/%m/%Y %H:%M"),
+
+    "ผลการประเมิน":
+        result,
+
+    "คำแนะนำ":
+        recommendation,
+
+    "Confidence":
+        round(confidence,2)
+
+}])
+
+history = pd.concat(
+    [history,new_record],
+    ignore_index=True
+)
+
+history.to_csv(
+    HISTORY_FILE,
+    index=False,
+    encoding="utf-8-sig"
+)
+
 # =========================
 # Classes
 # =========================
