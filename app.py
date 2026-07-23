@@ -109,7 +109,7 @@ CLASSES = [
     "Grade 4"
 ]
 
-IMG_SIZE = 260
+IMG_SIZE = 128
 
 MODEL_PATH = "dfu_final_model (5).keras"
 
