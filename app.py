@@ -9,7 +9,6 @@ import pandas as pd
 import os
 from datetime import datetime
 
-model = load_model()
 
 HISTORY_FILE = "assessment_history.csv"
 
