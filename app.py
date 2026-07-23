@@ -240,7 +240,7 @@ if image is not None:
         prediction = model.predict(
             image_array,
             verbose=0
-        )
+    )
 
     predicted_index = np.argmax(prediction)
 
