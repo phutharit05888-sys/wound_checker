@@ -40,7 +40,9 @@ if os.path.exists(HISTORY_FILE):
             st.markdown(f"""
             <div style="
             display:flex;
-            background:var(--secondary-background-color);
+           background: color-mix(in srgb,
+               var(--secondary-background-color) 88%,
+               white 12%);
             border-radius:18px;
             overflow:hidden;
             margin-bottom:18px;
