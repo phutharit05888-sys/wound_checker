@@ -1,53 +1,68 @@
-result = str(row["ผลการประเมิน"])
+import streamlit as st
+import pandas as pd
+import os
 
-# ----------------------------------
-# Choose stripe color
-# ----------------------------------
+st.set_page_config(
+    page_title="บันทึกผลการประเมิน",
+    page_icon="📋"
+)
 
-if "เฝ้าระวัง" in result or "Grade 1" in result:
-    color = "#43C463"
+HISTORY_FILE = "assessment_history.csv"
 
-elif "พบแพทย์" in result and "ด่วน" not in result:
-    color = "#FFD54F"
+st.title("📋 บันทึกผลการประเมิน")
 
-else:
-    color = "#F44336"
+if os.path.exists(HISTORY_FILE):
 
-# ----------------------------------
-# Card
-# ----------------------------------
+    history = pd.read_csv(HISTORY_FILE)
 
-with st.container():
+    if len(history)==0:
 
-    left, right = st.columns([0.12, 8], gap="small")
+        st.info("ยังไม่มีข้อมูลการประเมิน")
 
-    with left:
-        st.markdown(
-            f"""
+    else:
+
+        history = history.iloc[::-1]
+
+        for _,row in history.iterrows():
+
+            if row["ผลการประเมิน"]=="ควรดูแลเฝ้าระวัง":
+
+                color="#49C16D"
+
+            elif row["ผลการประเมิน"]=="ควรพบแพทย์":
+
+                color="#FFD54F"
+
+            else:
+
+                color="#F44336"
+
+            st.markdown(f"""
             <div style="
-                background:{color};
-                width:14px;
-                height:95px;
-                border-radius:12px;
-                margin:auto;
+            display:flex;
+            background:var(--secondary-background-color);
+            border-radius:18px;
+            overflow:hidden;
+            margin-bottom:18px;
+            box-shadow:0px 2px 8px rgba(0,0,0,.1);
+            ">
+
+            <div style="
+            width:16px;
+            background:{color};
             "></div>
-            """,
-            unsafe_allow_html=True,
-        )
 
-    with right:
+            <div style="padding:18px;">
 
-        with st.container(border=True):
+            <h3 style="margin:0;color:#173A75;">
+            {row['ผลการประเมิน']}
+            </h3>
 
-            st.markdown(
-                f"""
-                <div style="font-size:28px;font-weight:700;">
-                {result}
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            <p style="margin-top:8px;color:gray;">
+            บันทึกวันที่ : {row['วันที่และเวลา']}
+            </p>
 
-            st.caption(
-                f"บันทึกวันที่ : {row['วันที่และเวลา']}"
-            )
+            </div>
+
+            </div>
+            """,unsafe_allow_html=True)
