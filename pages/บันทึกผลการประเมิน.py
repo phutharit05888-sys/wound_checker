@@ -34,7 +34,7 @@ if os.path.exists(HISTORY_FILE):
             if (
                 "Grade 1" in result
                 or "เฝ้าระวัง" in result
-                or "มีความเสี่ยงจะเกิดแผล" in result
+                or "ควรดูแลเฝ้าระวัง" in result
             ):
 
                 color = "#49C16D"
