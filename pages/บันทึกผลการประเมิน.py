@@ -44,15 +44,47 @@ else:
 
                 icon = "🔴"
 
-            with st.container(border=True):
+            st.markdown(f"""
+            <div style="
+            display:flex;
+            align-items:center;
+            margin-bottom:18px;
+            border-radius:22px;
+            overflow:hidden;
+            background:var(--secondary-background-color);
+            border:1px solid rgba(128,128,128,.15);
+            ">
 
-                col1, col2 = st.columns([1, 12])
+            <div style="
+            width:14px;
+            height:105px;
+            background:{color};
+            flex-shrink:0;
+            ">
+            </div>
 
-                with col1:
+            <div style="
+            padding:20px;
+            ">
 
-                    st.markdown(f"# {icon}")
+            <div style="
+            font-size:30px;
+            font-weight:700;
+            color:var(--text-color);
+            ">
+            {result}
+            </div>
 
-                with col2:
+            <div style="
+            margin-top:8px;
+            font-size:16px;
+            color:var(--text-color);
+            opacity:.65;
+            ">
+            บันทึกวันที่ : {row['วันที่และเวลา']}
+            </div>
 
-                    st.markdown(f"### {result}")
-                    st.caption(f"บันทึกวันที่ : {row['วันที่และเวลา']}")
+            </div>
+
+            </div>
+            """, unsafe_allow_html=True)
