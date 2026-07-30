@@ -15,7 +15,7 @@ if os.path.exists(HISTORY_FILE):
 
     history = pd.read_csv(HISTORY_FILE)
 
-    if len(history)==0:
+    if len(history) == 0:
 
         st.info("ยังไม่มีข้อมูลการประเมิน")
 
@@ -23,24 +23,49 @@ if os.path.exists(HISTORY_FILE):
 
         history = history.iloc[::-1]
 
-        for _,row in history.iterrows():
+        for _, row in history.iterrows():
 
-            if row["ผลการประเมิน"]=="ควรดูแลเฝ้าระวัง":
+            result = str(row["ผลการประเมิน"])
 
-                color="#49C16D"
+            # ==========================
+            # Choose Color
+            # ==========================
 
-            elif row["ผลการประเมิน"]=="ควรพบแพทย์":
+            if (
+                "Grade 1" in result
+                or "เฝ้าระวัง" in result
+                or "มีความเสี่ยงจะเกิดแผล" in result
+            ):
 
-                color="#FFD54F"
+                color = "#49C16D"
+
+            elif (
+                "Grade 2" in result
+                or ("ควรพบแพทย์" in result and "ด่วน" not in result)
+            ):
+
+                color = "#FFD54F"
+
+            elif (
+                "Grade 3" in result
+                or "Grade 4" in result
+                or "ด่วน" in result
+            ):
+
+                color = "#F44336"
 
             else:
 
-                color="#F44336"
+                color = "#9E9E9E"
+
+            # ==========================
+            # Card
+            # ==========================
 
             st.markdown(f"""
             <div style="
             display:flex;
-            background:var(--background-color);
+            background:var(--secondary-background-color);
             border-radius:18px;
             overflow:hidden;
             margin-bottom:18px;
@@ -49,20 +74,28 @@ if os.path.exists(HISTORY_FILE):
 
             <div style="
             width:16px;
+            min-width:16px;
             background:{color};
             "></div>
 
             <div style="padding:18px;">
 
-            <h3 style="margin:0;color:#173A75;">
-            {row['ผลการประเมิน']}
+            <h3 style="
+            margin:0;
+            color:var(--text-color);
+            ">
+            {result}
             </h3>
 
-            <p style="margin-top:8px;color:gray;">
+            <p style="
+            margin-top:8px;
+            color:var(--text-color);
+            opacity:.65;
+            ">
             บันทึกวันที่ : {row['วันที่และเวลา']}
             </p>
 
             </div>
 
             </div>
-            """,unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
