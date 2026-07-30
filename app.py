@@ -240,7 +240,7 @@ if image is not None:
 
     if predicted_class == "Grade 1":
 
-        risk_text = "มีความเสี่ยงจะเกิดแผล"
+        risk_text = "ควรดูแลเฝ้าระวัง"
 
         recommendation = """
 ควรล้างแผลด้วยน้ำเกลือปราศจากเชื้อ
