@@ -198,7 +198,7 @@ if image is not None:
     st.image(
     image,
     caption="ภาพที่เลือก",
-    width=300
+    width=350
     )
 
     img = image.resize(
