@@ -174,31 +174,31 @@ else:
             else:
 
                 color = "#F44336"
-         # ==========================================
-            # HISTORY CARD
-            # ==========================================
+# ==========================================
+# HISTORY CARD
+# ==========================================
 
-            st.markdown(f"""
-            <div class="history-card">
+st.markdown(f"""
+<div class="history-card">
 
-                <div class="history-bar"
-                     style="background:{color};">
-                </div>
+    <div class="history-bar"
+         style="background:{color};">
+    </div>
 
-                <div class="history-content">
+    <div class="history-content">
 
-                    <div class="history-title">
-                        {result}
-                    </div>
+        <div class="history-title">
+            {result}
+        </div>
 
-                    <div class="history-date">
-                        บันทึกวันที่ : {row["วันที่และเวลา"]}
-                    </div>
+        <div class="history-date">
+            บันทึกวันที่ : {row["วันที่และเวลา"]}
+        </div>
 
-                </div>
+    </div>
 
-            </div>
-            """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 # ==========================================
 # FOOTER
