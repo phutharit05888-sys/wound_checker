@@ -196,9 +196,9 @@ with st.container(border=True):
 if image is not None:
 
     st.image(
-        image,
-        caption="ภาพที่เลือก",
-        use_container_width=True
+    image,
+    caption="ภาพที่เลือก",
+    width=300
     )
 
     img = image.resize(
