@@ -329,11 +329,6 @@ if image is not None:
 
             st.error(f"{color} {risk_text}")
 
-        st.metric(
-            "ความมั่นใจของ AI",
-            f"{confidence:.2f}%"
-        )
-
     # =====================================================
     # RECOMMENDATION
     # =====================================================
